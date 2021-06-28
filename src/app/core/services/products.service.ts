@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Product } from '../store/models/product.model';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
