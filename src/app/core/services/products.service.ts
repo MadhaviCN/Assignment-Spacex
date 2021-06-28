@@ -8,30 +8,9 @@ import { Product } from '../store/models/product.model';
   providedIn: 'root'
 })
 export class ProductsService {
-  product: {
-    addproduct: Product;
-  };
 
   constructor(private httpclient: HttpClient) { }
 
-  /**
-   * Service to add the products in to DB
-   *
-   * param {*} prods
-   * returns
-   * memberof ProductsService
-   */
-  public addProducts(prods) {
-    return this.httpclient.post('http://localhost:8080/api/addProducts', prods)
-      .pipe(
-        map((res: Product) => {
-          console.log(res);
-        }),
-        catchError((err) => {
-          return throwError(err);
-        })
-      );
-  }
 
   /**
    * Service to get the products from DB
@@ -40,10 +19,10 @@ export class ProductsService {
    * memberof ProductsService
    */
   public getProducts() {
-    return this.httpclient.get('http://localhost:8080/api/getProducts')
+    return this.httpclient.get('https://api.spacexdata.com/v3/launches?limit=100')
       .pipe(
-        map((res: Product) => this.product = {
-          addproduct: res
+        map((res) => {
+          return res;
         }),
         catchError((err) => {
           return throwError(err);
@@ -51,18 +30,23 @@ export class ProductsService {
       );
   }
 
-  /**
-   * Service to delete product from DB
-   *
-   * param {*} row
-   * returns
-   * memberof ProductsService
-   */
-  public deleteProducts(row) {
-    return this.httpclient.post('http://localhost:8080/api/deleteProduct', row)
+  public getLaunchDetails() {
+    return this.httpclient.get('https://api.spacexdata.com/v3/launches?limit=100&amp;launch_success=true')
       .pipe(
         map((res) => {
-          console.log(res);
+          return res;
+        }),
+        catchError((err) => {
+          return throwError(err);
+        })
+      );
+  }
+
+  public getLandingDetails() {
+    return this.httpclient.get('https://api.spacexdata.com/v3/launches?limit=100&amp;launch_success=true&amp;land_success=true')
+      .pipe(
+        map((res) => {
+          return res;
         }),
         catchError((err) => {
           return throwError(err);

@@ -13,14 +13,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AddProductComponent } from './products/add-product/add-product.component';
-import { ListProductsComponent } from './shared/list-products/list-products.component';
 import { ProductsService } from './core/services/products.service';
 
 @NgModule({
   declarations: [
     AppComponent,
     AddProductComponent,
-    ListProductsComponent
   ],
   imports: [
     BrowserModule,

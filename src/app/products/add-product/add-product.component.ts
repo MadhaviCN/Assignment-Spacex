@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { ProductsService } from '../../core/services/products.service';
-import { Product } from '../../core/store/models/product.model';
 
 @Component({
   selector: 'app-add-product',
@@ -10,68 +8,33 @@ import { Product } from '../../core/store/models/product.model';
 })
 export class AddProductComponent implements OnInit {
 
-  public productForm: FormGroup;
+  public launchYear = [];
 
-  public submitted = false;
+  public imageSource = [];
 
-  public productAdded: Product;
+  public missionDetails = [];
 
-  public showTable = false;
+  private missionData;
 
-  public buttonVal = 'Save';
+  private launchData;
 
-  public updateId;
+  private landingData;
 
-  constructor(private formbuilder: FormBuilder, private productsService: ProductsService) {
+  public missionFlag = false;
+
+  public launchSuccessArray = [];
+
+  public launchFailed = [];
+
+  public launchFlag = false;
+
+  public toggle = true;
+
+  constructor(private productsService: ProductsService, private ele: ElementRef) {
   }
 
   ngOnInit() {
-    this.createProductForm();
     this.getProducts();
-  }
-
-  /**
-   * To create form
-   *
-   * memberof AddProductComponent
-   */
-  createProductForm() {
-    this.productForm = this.formbuilder.group({
-      title: ['', Validators.required],
-      description: [''],
-      price: ['', Validators.required],
-      company: ['', Validators.required],
-      productdate: ['', Validators.required]
-    });
-  }
-
-  /**
-   * to save the products
-   *
-   * memberof AddProductComponent
-   */
-  submitForm() {
-    if (this.productForm.valid) {
-      this.submitted = true;
-      this.showTable = true;
-      this.productForm.value.mode = this.buttonVal;
-      this.productForm.value.id = this.updateId;
-      this.productsService.addProducts(this.productForm.value).subscribe(() => {
-        this.getProducts();
-      });
-    }
-    this.productForm.reset();
-    this.buttonVal = 'Save';
-  }
-
-  /**
-   * Adding controls
-   *
-   * readonly
-   * memberof AddProductComponent
-   */
-  get formValue() {
-    return this.productForm.controls;
   }
 
   /**
@@ -80,34 +43,119 @@ export class AddProductComponent implements OnInit {
    * memberof AddProductComponent
    */
   getProducts() {
+    this.launchYear = [];
+    this.imageSource = [];
     this.productsService.getProducts().subscribe((data) => {
-      this.productAdded = data.addproduct;
+      this.missionFlag = true;
+      this.missionData = data;
+      this.missionData.forEach(element => {
+        if (this.launchYear.indexOf(element.launch_year) === -1) {
+          this.launchYear.push(element.launch_year);
+          this.imageSource.push(element.links.mission_patch_small);
+        }
+      });
     }, (error) => {
       console.log(error);
     });
   }
 
   /**
-   * To update the products in DB
+   * To select the mission based on year selected
    *
-   * param {*} event
    * memberof AddProductComponent
    */
-  updateProduct(event) {
-    this.productForm.patchValue(event);
-    this.buttonVal = 'Update';
-    this.updateId = event._id;
+  selectMission(year) {
+    this.missionDetails = [];
+    this.missionFlag = false;
+    this.productsService.getProducts().subscribe((data) => {
+      this.missionData = data;
+      this.missionData.forEach(element => {
+        if (year === element.launch_year) {
+          this.missionDetails.push(element);
+        }
+      }, (error) => {
+        console.log(error);
+      });
+    });
   }
 
   /**
-   * To delete the products
+   * To fetch lauch success mission
    *
-   * param {*} event
    * memberof AddProductComponent
    */
-  deleteProduct(event) {
-    this.productsService.deleteProducts(event).subscribe(() => {
-      this.getProducts();
+  launchSuccess(value) {
+    this.missionDetails = [];
+    this.missionFlag = false;
+    this.productsService.getLaunchDetails().subscribe((data) => {
+      this.launchData = data;
+      console.log(this.launchData);
+      this.launchData.forEach(element => {
+        if (value === element.launch_success) {
+          this.missionDetails.push(element);
+        }
+      });
+    }, (error) => {
+      console.log(error);
+    });
+  }
+
+
+  /**
+   * To fetch lauch failed mission
+   *
+   * memberof AddProductComponent
+   */
+  launchFailure(value) {
+    this.missionDetails = [];
+    this.productsService.getLaunchDetails().subscribe((data) => {
+      this.launchData = data;
+      this.missionFlag = false;
+      this.launchData.forEach(element => {
+        if (value === element.launch_success) {
+          this.missionDetails.push(element);
+        }
+      });
+    }, (error) => {
+      console.log(error);
+    });
+  }
+
+  /**
+   * To fetch land success mission
+   *
+   * memberof AddProductComponent
+   */
+  landingSuccess(value) {
+    this.missionDetails = [];
+    this.productsService.getLandingDetails().subscribe((data) => {
+      this.landingData = data;
+      this.missionFlag = false;
+      this.landingData.forEach(element => {
+        if (value === element.land_success) {
+          this.missionDetails.push(element);
+        }
+      });
+    }, (error) => {
+      console.log(error);
+    });
+  }
+
+  /**
+   * To fetch land failed mission
+   *
+   * memberof AddProductComponent
+   */
+  landingFailure(value) {
+    this.missionDetails = [];
+    this.productsService.getLandingDetails().subscribe((data) => {
+      this.landingData = data;
+      this.missionFlag = false;
+      this.landingData.forEach(element => {
+        if (value === element.land_success) {
+          this.missionDetails.push(element);
+        }
+      });
     }, (error) => {
       console.log(error);
     });
